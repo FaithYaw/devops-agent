@@ -1,0 +1,22 @@
+[project]
+name = "devops-ai-agent"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "alexayaw", email = "coconutxinxin@gmail.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "mcp[cli]>=2.1.1",
+    "openai>=3.7.0",
+    "python-dotenv>=1.2.3",
+    "streamlit>=1.38.0",
+]
+
+[project.scripts]
+devops-ai-agent = "devops_ai_agent:main"
+
+[build-system]
+requires = ["uv_build>=0.12.7,<0.13.0"]
+build-backend = "uv_build"

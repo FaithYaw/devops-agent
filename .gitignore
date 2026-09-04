@@ -1,0 +1,20 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+devops-mcp/.venv
+devops-ai-agent/.venv
+
+.env.local
+.env.production
+
+# IDE files
+.idea/
+**/.idea/
+*.iml
+workspace.xml

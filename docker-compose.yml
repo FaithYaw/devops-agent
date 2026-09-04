@@ -1,0 +1,31 @@
+services:
+  mcp-server:
+    build:
+      context: ./devops-mcp
+    container_name: devops-mcp
+    env_file:
+      - ./.env.production
+    environment:
+      APP_ENV: production
+      MCP_HOST: 0.0.0.0
+      MCP_PORT: 9090
+    ports:
+      - "9090:9090"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+
+  ai-agent:
+    build:
+      context: ./devops-ai-agent
+    container_name: devops-ai-agent
+    env_file:
+      - ./.env.production
+    environment:
+      APP_ENV: production
+      MCP_SERVER_URL: http://mcp-server:9090/mcp
+    depends_on:
+      - mcp-server
+    ports:
+      - "8501:8501"
+    restart: unless-stopped
