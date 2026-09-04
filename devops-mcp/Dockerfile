@@ -7,7 +7,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 COPY pyproject.toml uv.lock README.md ./
-RUN pip install uv && uv sync --frozen --no-dev
+RUN pip install uv && uv sync --frozen --no-dev --no-install-project
 
 COPY . .
 
