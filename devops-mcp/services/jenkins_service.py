@@ -47,18 +47,64 @@ class JenkinsService:
             "url": job.get("url")
         }
 
-    async def trigger_build(self, job_name: str):
+    async def get_job_parameters(self, job_name: str):
 
         url = (
             f"{self.base_url}"
-            f"/job/{job_name}/build"
+            f"/job/{job_name}/api/json?tree=actions[parameterDefinitions[*]]"
         )
+
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                url,
+                auth=(self.username, self.token),
+            )
+            response.raise_for_status()
+
+            job = response.json()
+            actions = job.get("actions", [])
+            parameter_definitions = []
+
+            for action in actions:
+                params = action.get("parameterDefinitions") or []
+                for param in params:
+                    parameter_definitions.append({
+                        "name": param.get("name"),
+                        "type": param.get("type"),
+                        "description": param.get("description"),
+                        "default_parameter_value": (param.get("defaultParameterValue") or {}).get("value"),
+                        "choices": param.get("choices") or [],
+                    })
+
+            return {
+                "job_name": job_name,
+                "parameters": parameter_definitions,
+            }
+
+    async def trigger_build(self, job_name: str, parameters: dict | None = None, cause: str | None = None):
+
+        payload = {}
+        if cause:
+            payload["cause"] = cause
+
+        if parameters:
+            payload.update(parameters)
+            url = (
+                f"{self.base_url}"
+                f"/job/{job_name}/buildWithParameters"
+            )
+        else:
+            url = (
+                f"{self.base_url}"
+                f"/job/{job_name}/build"
+            )
 
         async with httpx.AsyncClient() as client:
 
             response = await client.post(
                 url,
-                auth=(self.username, self.token)
+                auth=(self.username, self.token),
+                data=payload or None,
             )
 
             response.raise_for_status()
@@ -66,5 +112,7 @@ class JenkinsService:
             return {
                 "job_name": job_name,
                 "triggered": True,
-                "status_code": response.status_code
+                "status_code": response.status_code,
+                "parameters": parameters or {},
+                "cause": cause,
             }

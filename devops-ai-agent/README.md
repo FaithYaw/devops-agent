@@ -18,6 +18,8 @@ Both the agent and MCP server load shared env config from the repository root:
 
 The UI will use `MCP_SERVER_URL` from the selected env file.
 
+The dashboard renders a health snapshot at the top of the page with running containers, unhealthy containers, failing Jenkins jobs, last deployment status, and MCP connectivity before the user submits a chat prompt.
+
 ## Run in terminal mode
 
 `uv run python agent.py`
